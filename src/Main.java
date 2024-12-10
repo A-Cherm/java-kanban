@@ -37,10 +37,7 @@ public class Main {
         taskManager.updateSubTask(newSubTask);
         newSubTask = new SubTask("Подзадача 2", "", 5, TaskStatus.DONE, 3);
         taskManager.updateSubTask(newSubTask);
-        ArrayList<Integer> subTaskList = new ArrayList<>();
-        subTaskList.add(4);
-        subTaskList.add(5);
-        newEpic = new Epic("Эпик 2", "новый!",3, subTaskList);
+        newEpic = new Epic("Эпик 2", "новый!",3);
         taskManager.updateEpic(newEpic);
 
         System.out.println("Обновление");
@@ -71,20 +68,6 @@ public class Main {
         System.out.println("SubTasks: " + taskManager.getSubTaskList());
         System.out.println("-".repeat(20));
 
-        // добавление эпика к существующей подзадаче
-        subTaskList = new ArrayList<>();
-        subTaskList.add(5);
-        newEpic = new Epic("Эпик 2", "", subTaskList);
-        taskManager.addEpic(newEpic);
-
-        System.out.println("Добавление эпика к подзадаче");
-        System.out.println("Tasks: " + taskManager.getTaskList());
-        System.out.println("Epics: " + taskManager.getEpicList());
-        System.out.println("SubTasks: " + taskManager.getSubTaskList());
-        System.out.println(taskManager.getEpicSubTaskList(8));
-        System.out.println(taskManager.getSubTaskById(5).getEpicId());
-        System.out.println("-".repeat(20));
-
         // удаление всех подзадач
         taskManager.deleteEpicById(8);
         taskManager.deleteAllTasks();
@@ -92,9 +75,9 @@ public class Main {
         taskManager.addEpic(newEpic);
         newSubTask = new SubTask("Подзадача 1", "", TaskStatus.IN_PROGRESS, 9);
         taskManager.addSubTask(newSubTask);
-        newSubTask = new SubTask("Подзадача 2", "", TaskStatus.NEW, 9);
+        newSubTask = new SubTask("Подзадача 2", "", TaskStatus.NEW, 8);
         taskManager.addSubTask(newSubTask);
-        newSubTask = new SubTask("Подзадача 3", "", TaskStatus.NEW, 9);
+        newSubTask = new SubTask("Подзадача 3", "", TaskStatus.NEW, 8);
         taskManager.addSubTask(newSubTask);
 
         System.out.println("Удаление всех подзадач");
@@ -112,9 +95,9 @@ public class Main {
         System.out.println(taskManager.getEpicSubTaskList(9));
         System.out.println("-".repeat(20));
 
-        newSubTask = new SubTask("Подзадача 2", "", TaskStatus.DONE, 9);
+        newSubTask = new SubTask("Подзадача 2", "", TaskStatus.DONE, 8);
         taskManager.addSubTask(newSubTask);
-        newSubTask = new SubTask("Подзадача 3", "", TaskStatus.DONE, 9);
+        newSubTask = new SubTask("Подзадача 3", "", TaskStatus.DONE, 8);
         taskManager.addSubTask(newSubTask);
 
         System.out.println("Tasks: " + taskManager.getTaskList());
