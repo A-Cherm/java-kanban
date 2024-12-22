@@ -1,3 +1,5 @@
+package task;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ class EpicTest {
     public void shouldBeEqualEpicsWithTheSameId() {
         Epic epic1 = new Epic("a", "b", 1);
         Epic epic2 = new Epic("c", "d", 1);
-        assertEquals(epic1, epic2, "Ошибка в равенстве экзепляров класса Epic");
+        assertEquals(epic1, epic2, "Ошибка в равенстве экзепляров класса task.Epic");
     }
 
     @Test

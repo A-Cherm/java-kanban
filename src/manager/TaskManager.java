@@ -1,5 +1,11 @@
-import java.util.ArrayList;
-import java.util.HashMap;
+package manager;
+
+import task.Epic;
+import task.SubTask;
+import task.Task;
+
+import java.util.List;
+import java.util.Map;
 
 public interface TaskManager {
     void addTask(Task task);
@@ -8,13 +14,13 @@ public interface TaskManager {
 
     void addSubTask(SubTask subTask);
 
-    ArrayList<Task> getTaskList();
+    List<Task> getTaskList();
 
-    ArrayList<Epic> getEpicList();
+    List<Epic> getEpicList();
 
-    ArrayList<SubTask> getSubTaskList();
+    List<SubTask> getSubTaskList();
 
-    ArrayList<SubTask> getEpicSubTaskList(int id);
+    List<SubTask> getEpicSubTaskList(int id);
 
     void deleteAllTasks();
 
@@ -40,13 +46,11 @@ public interface TaskManager {
 
     void deleteSubTaskById(int id);
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 
-    HashMap<Integer, Task> getTasks();
+    Map<Integer, Task> getTasks();
 
-    HashMap<Integer, Epic> getEpics();
+    Map<Integer, Epic> getEpics();
 
-    HashMap<Integer, SubTask> getSubTasks();
-
-    HistoryManager getHistoryManager();
+    Map<Integer, SubTask> getSubTasks();
 }

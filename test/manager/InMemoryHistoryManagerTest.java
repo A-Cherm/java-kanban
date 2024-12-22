@@ -1,5 +1,10 @@
+package manager;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import task.Epic;
+import task.Task;
+import task.TaskStatus;
 
 import java.util.ArrayList;
 
