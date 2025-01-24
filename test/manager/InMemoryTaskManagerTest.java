@@ -138,12 +138,22 @@ class InMemoryTaskManagerTest {
         Task task = new Task("a", "b", TaskStatus.NEW);
         int id = InMemoryTaskManager.getCurrentId();
         taskManager.addTask(task);
+        taskManager.getTaskById(id);
+
+        List<Task> history = taskManager.getHistory();
+
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(1, history.size(), "Неверный размер истории");
+
         taskManager.deleteTaskById(id);
 
         List<Task> tasks = taskManager.getTaskList();
+        history = taskManager.getHistory();
 
         assertNotNull(tasks, "Список задач не возвращается");
         assertEquals(0, tasks.size(), "Неверное количество задач");
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(0, history.size(), "Неверный размер истории");
     }
 
     @Test
@@ -154,15 +164,26 @@ class InMemoryTaskManagerTest {
 
         taskManager.addEpic(epic);
         taskManager.addSubTask(subTask);
+        taskManager.getEpicById(id);
+        taskManager.getSubTaskById(id + 1);
+
+        List<Task> history = taskManager.getHistory();
+
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(2, history.size(), "Неверный размер истории");
+
         taskManager.deleteEpicById(id);
 
         List<Epic> epics = taskManager.getEpicList();
         List<SubTask> subTasks = taskManager.getSubTaskList();
+        history = taskManager.getHistory();
 
         assertNotNull(epics, "Список эпиков не возвращается");
         assertEquals(0, epics.size(), "Неверное количество эпиков");
         assertNotNull(subTasks, "Список подзадач не возвращается");
         assertEquals(0, subTasks.size(), "Неверное количество подзадач");
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(0, history.size(), "Неверный размер истории");
     }
 
     @Test
@@ -173,15 +194,119 @@ class InMemoryTaskManagerTest {
 
         taskManager.addEpic(epic);
         taskManager.addSubTask(subTask);
+        taskManager.getSubTaskById(id + 1);
+
+        List<Task> history = taskManager.getHistory();
+
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(1, history.size(), "Неверный размер истории");
+
         taskManager.deleteSubTaskById(id + 1);
 
         List<SubTask> epicSubTasks = taskManager.getEpicSubTaskList(id);
         List<SubTask> subTasks = taskManager.getSubTaskList();
+        history = taskManager.getHistory();
 
         assertNotNull(epicSubTasks, "Список подзадач эпика не возвращается");
         assertEquals(0, epicSubTasks.size(), "Неверное количество подзадач эпика");
         assertNotNull(subTasks, "Список подзадач не возвращается");
         assertEquals(0, subTasks.size(), "Неверное количество подзадач");
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(0, history.size(), "Неверный размер истории");
+    }
+
+    @Test
+    public void shouldDeleteAllTasks() {
+        Task task1 = new Task("a", "b", TaskStatus.NEW);
+        Task task2 = new Task("a", "b", TaskStatus.NEW);
+
+        int id = InMemoryTaskManager.getCurrentId();
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        taskManager.getTaskById(id);
+        taskManager.getTaskById(id + 1);
+
+
+        List<Task> history = taskManager.getHistory();
+
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(2, history.size(), "Неверный размер истории");
+
+        taskManager.deleteAllTasks();
+
+        List<Task> tasks = taskManager.getTaskList();
+        history = taskManager.getHistory();
+
+        assertNotNull(tasks, "Список задач не возвращается");
+        assertEquals(0, tasks.size(), "Неверное количество задач");
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(0, history.size(), "Неверный размер истории");
+    }
+
+    @Test
+    public void shouldDeleteAllEpics(){
+        Epic epic1 = new Epic("a", "a");
+        Epic epic2 = new Epic("b", "b");
+        int id = InMemoryTaskManager.getCurrentId();
+        SubTask subTask = new SubTask("a", "b", TaskStatus.NEW, id);
+
+        taskManager.addEpic(epic1);
+        taskManager.addEpic(epic2);
+        taskManager.addSubTask(subTask);
+        taskManager.getEpicById(id);
+        taskManager.getEpicById(id + 1);
+        taskManager.getSubTaskById(id + 2);
+
+        List<Task> history = taskManager.getHistory();
+
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(3, history.size(), "Неверный размер истории");
+
+        taskManager.deleteAllEpics();
+
+        List<Epic> epics = taskManager.getEpicList();
+        List<SubTask> subTasks = taskManager.getSubTaskList();
+        history = taskManager.getHistory();
+
+        assertNotNull(epics, "Список эпиков не возвращается");
+        assertEquals(0, epics.size(), "Неверное количество эпиков");
+        assertNotNull(subTasks, "Список подзадач не возвращается");
+        assertEquals(0, subTasks.size(), "Неверное количество подзадач");
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(0, history.size(), "Неверный размер истории");
+    }
+
+    @Test
+    public void shouldDeleteAllSubTasks() {
+        Epic epic = new Epic("a", "a");
+        int id = InMemoryTaskManager.getCurrentId();
+        SubTask subTask1 = new SubTask("a", "b", TaskStatus.NEW, id);
+        SubTask subTask2 = new SubTask("b", "c", TaskStatus.NEW, id);
+
+        taskManager.addEpic(epic);
+        taskManager.addSubTask(subTask1);
+        taskManager.addSubTask(subTask2);
+        taskManager.getEpicById(id);
+        taskManager.getSubTaskById(id + 1);
+        taskManager.getSubTaskById(id + 2);
+
+        List<Task> history = taskManager.getHistory();
+
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(3, history.size(), "Неверный размер истории");
+
+        taskManager.deleteAllSubTasks();
+
+        List<SubTask> epicSubTasks = taskManager.getEpicSubTaskList(id);
+        List<SubTask> subTasks = taskManager.getSubTaskList();
+        history = taskManager.getHistory();
+
+        assertNotNull(epicSubTasks, "Список подзадач эпика не возвращается");
+        assertEquals(0, epicSubTasks.size(), "Неверное количество подзадач эпика");
+        assertNotNull(subTasks, "Список подзадач не возвращается");
+        assertEquals(0, subTasks.size(), "Неверное количество подзадач");
+        assertNotNull(history, "История задач не возвращается");
+        assertEquals(1, history.size(), "Неверный размер истории");
     }
 
     @Test
