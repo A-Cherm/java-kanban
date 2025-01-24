@@ -86,32 +86,52 @@ public class Main {
         // история
         taskManager.deleteAllTasks();
         taskManager.deleteAllEpics();
+
         newTask = new Task("Задача 1", "123", TaskStatus.NEW);
         taskManager.addTask(newTask);
         newTask = new Task("Задача 2", "321", TaskStatus.DONE);
         taskManager.addTask(newTask);
+
+        int id = InMemoryTaskManager.getCurrentId();
         newEpic = new Epic("Эпик 1", "");
         taskManager.addEpic(newEpic);
-        newSubTask = new SubTask("Подзадача 1", "", TaskStatus.IN_PROGRESS, 15);
+        newSubTask = new SubTask("Подзадача 1", "", TaskStatus.IN_PROGRESS, id);
         taskManager.addSubTask(newSubTask);
-        newSubTask = new SubTask("Подзадача 2", "", TaskStatus.NEW, 15);
+        newSubTask = new SubTask("Подзадача 2", "", TaskStatus.NEW, id);
         taskManager.addSubTask(newSubTask);
-        newTask = taskManager.getTaskById(1);
-        newTask = taskManager.getTaskById(13);
+        newSubTask = new SubTask("Подзадача 3", "", TaskStatus.NEW, id);
+        taskManager.addSubTask(newSubTask);
+        newEpic = new Epic("Эпик 2", "");
+        taskManager.addEpic(newEpic);
+        printAllTasks(taskManager);
 
-        System.out.println("История");
-        printAllTasks(taskManager);
-        newTask = taskManager.getTaskById(14);
-        newTask = taskManager.getTaskById(13);
-        newEpic = taskManager.getEpicById(15);
-        newSubTask = taskManager.getSubTaskById(17);
-        printAllTasks(taskManager);
-        for (int i = 0; i < 5; i++) {
-            newTask = taskManager.getTaskById(14);
-        }
-        printAllTasks(taskManager);
-        newEpic = taskManager.getEpicById(15);
-        printAllTasks(taskManager);
+        taskManager.getTaskById(id - 2);
+        taskManager.getTaskById(id - 2);
+
+        printHistory(taskManager);
+
+        taskManager.getEpicById(id);
+        taskManager.getSubTaskById(id + 1);
+        taskManager.getTaskById(id - 1);
+        taskManager.getSubTaskById(id + 3);
+        taskManager.getSubTaskById(id + 2);
+
+        printHistory(taskManager);
+
+        taskManager.getTaskById(id - 2);
+        taskManager.getSubTaskById(id + 1);
+        taskManager.getEpicById(id + 4);
+        taskManager.getEpicById(id + 4);
+
+        printHistory(taskManager);
+
+        taskManager.deleteTaskById(id - 2);
+
+        printHistory(taskManager);
+
+        taskManager.deleteEpicById(id);
+
+        printHistory(taskManager);
     }
 
     private static void printAllTasks(TaskManager manager) {
@@ -131,12 +151,14 @@ public class Main {
         for (Task subtask : manager.getSubTaskList()) {
             System.out.println(subtask);
         }
+        System.out.println("-".repeat(20));
+    }
 
+    private static void printHistory(TaskManager manager) {
         System.out.println("История:");
         for (Task task : manager.getHistory()) {
             System.out.println(task);
         }
-
         System.out.println("-".repeat(20));
     }
 }
