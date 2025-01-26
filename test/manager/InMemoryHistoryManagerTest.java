@@ -60,5 +60,19 @@ class InMemoryHistoryManagerTest {
 
         assertNull(historyManager.getListHead(), "Неверная ссылка на голову списка");
         assertNull(historyManager.getListTail(), "Неверная ссылка на хвост списка");
+
+        Task task1 = new Task("b", "c", 2, TaskStatus.DONE);
+        Task task2 = new Task("b", "c", 3, TaskStatus.DONE);
+        historyManager.linkLast(task1);
+        Node<Task> node2 = historyManager.linkLast(task2);
+
+        historyManager.removeNode(node2);
+
+        assertNotNull(historyManager.getListHead(), "Неверная ссылка на голову списка");
+        assertNotNull(historyManager.getListTail(), "Неверная ссылка на хвост списка");
+        assertEquals(historyManager.getListHead(), historyManager.getListTail(),
+                "Не совпадают ссылки на голову и хвост");
+        assertNull(historyManager.getListTail().next, "Непустая ссылка на следующую ноду хвоста списка");
+        assertNull(historyManager.getListHead().prev, "Непустая ссылка на предыдущую ноду головы списка");
     }
 }

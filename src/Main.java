@@ -110,7 +110,11 @@ public class Main {
 
         printHistory(taskManager);
 
-        taskManager.getEpicById(id);
+        taskManager.getTaskById(id - 1);
+        taskManager.deleteTaskById(id - 1);
+
+        printHistory(taskManager);
+
         taskManager.getSubTaskById(id + 1);
         taskManager.getTaskById(id - 1);
         taskManager.getSubTaskById(id + 3);
