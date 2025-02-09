@@ -90,7 +90,7 @@ public class Main {
         newTask = new Task("Задача 2", "321", TaskStatus.DONE);
         taskManager.addTask(newTask);
 
-        int id = InMemoryTaskManager.getCurrentId();
+        int id = taskManager.getCurrentId();
         newEpic = new Epic("Эпик 1", "");
         taskManager.addEpic(newEpic);
         newSubTask = new SubTask("Подзадача 1", "", TaskStatus.IN_PROGRESS, id);

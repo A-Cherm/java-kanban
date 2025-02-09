@@ -15,7 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Epic> epics;
     private final Map<Integer, SubTask> subTasks;
     private final HistoryManager historyManager;
-    private static int currentId = 1;
+    private int currentId = 1;
 
     public InMemoryTaskManager() {
         tasks = new HashMap<>();
@@ -75,6 +75,34 @@ public class InMemoryTaskManager implements TaskManager {
         epic.addSubTaskId(currentId);
         subTasks.put(currentId++, subTask);
         updateEpicStatus(epic);
+    }
+
+    protected void setAllTasks(List<Task> taskList, List<Epic> epicList, List<SubTask> subTaskList) {
+        int id;
+
+        for (Task task : taskList) {
+            id = task.getId();
+            tasks.put(id, task);
+            if (id > currentId) {
+                currentId = id;
+            }
+        }
+        for (Epic epic : epicList) {
+            id = epic.getId();
+            epics.put(id, epic);
+            if (id > currentId) {
+                currentId = id;
+            }
+        }
+        for (SubTask subTask : subTaskList) {
+            id = subTask.getId();
+            subTasks.put(id, subTask);
+            epics.get(subTask.getEpicId()).addSubTaskId(id);
+            if (id > currentId) {
+                currentId = id;
+            }
+        }
+        currentId++;
     }
 
     @Override
@@ -235,7 +263,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public static int getCurrentId() {
+    public int getCurrentId() {
         return currentId;
     }
 

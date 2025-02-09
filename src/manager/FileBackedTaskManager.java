@@ -1,8 +1,10 @@
 package manager;
 
 import java.io.*;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
+import exception.ManagerSaveException;
 import task.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
@@ -12,7 +14,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    public static String toString(Task task) {
+    private static String toString(Task task) {
         TaskType taskClass = TaskType.TASK;
         if (task instanceof Epic) {
             taskClass = TaskType.EPIC;
@@ -20,17 +22,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             taskClass = TaskType.SUBTASK;
         }
 
-        String string = String.format("%d,%s,%s,%s,Description %s", task.getId(), taskClass, task.getName(),
+        String string = String.format("%d,%s,%s,%s,%s", task.getId(), taskClass, task.getName(),
                 task.getStatus(), task.getDescription());
 
-
-        if (task instanceof SubTask subTask) {
-            string += "," + subTask.getEpicId();
+        if (taskClass == TaskType.SUBTASK) {
+            string += "," + ((SubTask) task).getEpicId();
         }
         return string;
     }
 
-    public void save() throws ManagerSaveException {
+    private void save() throws ManagerSaveException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             bw.write("id,type,name,status,description,epic\n");
             for (Task task : super.getTaskList()) {
@@ -47,25 +48,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public static Task fromString(String value) {
+    private static Task fromString(String value) {
         String[] split = value.split(",");
-        TaskStatus status = switch (split[3]) {
-            case "IN_PROGRESS" -> TaskStatus.IN_PROGRESS;
-            case "DONE" -> TaskStatus.DONE;
-            default -> TaskStatus.NEW;
-        };
+        TaskStatus status = TaskStatus.valueOf(split[3]);
 
-        return switch (split[1]) {
-            case "EPIC" -> new Epic(split[2], split[4].substring(12), Integer.parseInt(split[0]));
-            case "SUBTASK" -> new SubTask(split[2], split[4].substring(12), Integer.parseInt(split[0]),
-                                  status, Integer.parseInt(split[5]));
-            default -> new Task(split[2], split[4].substring(12), Integer.parseInt(split[0]), status);
-        };
+        switch (TaskType.valueOf(split[1])) {
+            case TaskType.EPIC:
+                Epic epic = new Epic(split[2], split[4], Integer.parseInt(split[0]));
+                epic.setStatus(status);
+                return epic;
+            case TaskType.SUBTASK:
+                return new SubTask(split[2], split[4], Integer.parseInt(split[0]), status, Integer.parseInt(split[5]));
+            default:
+                return new Task(split[2], split[4], Integer.parseInt(split[0]), status);
+        }
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
-        HashMap<Integer, Integer> epicIdChange = new HashMap<>();
+        List<Task> taskList = new ArrayList<>();
+        List<Epic> epicList = new ArrayList<>();
+        List<SubTask> subTaskList = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             br.readLine();
@@ -75,15 +78,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     break;
                 }
                 Task task = fromString(line);
+
                 if (task instanceof Epic) {
-                    epicIdChange.put(task.getId(), FileBackedTaskManager.getCurrentId());
-                    fileBackedTaskManager.addEpic((Epic) task);
+                    epicList.add((Epic) task);
                 } else if (task instanceof SubTask) {
-                    ((SubTask) task).setEpicId(epicIdChange.get(((SubTask) task).getEpicId()));
-                    fileBackedTaskManager.addSubTask((SubTask) task);
+                    subTaskList.add((SubTask) task);
                 } else {
-                    fileBackedTaskManager.addTask(task);
+                    taskList.add(task);
                 }
+                fileBackedTaskManager.setAllTasks(taskList, epicList, subTaskList);
             }
         } catch (IOException e) {
             System.out.println("Ошибка загрузки из файла");
@@ -98,7 +101,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             fm.addTask(new Task("Задача 1", "123", TaskStatus.NEW));
             fm.addEpic(new Epic("Эпик 1", "321"));
             fm.addSubTask(new SubTask("Подзадача 1", "asd", TaskStatus.IN_PROGRESS,
-                    InMemoryTaskManager.getCurrentId() - 1));
+                    fm.getCurrentId() - 1));
             fm.addTask(new Task("Задача 2", "345", TaskStatus.DONE));
             fm.addEpic(new Epic("Эпик 2", "666"));
 
@@ -109,6 +112,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             br.close();
 
             FileBackedTaskManager fm2 = FileBackedTaskManager.loadFromFile(tempFile);
+            printAllTasks(fm2);
+
+            fm2.updateEpic(new Epic("Эпик 2", "777", 5));
+            fm2.deleteEpicById(2);
+
             printAllTasks(fm2);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -133,4 +141,57 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
+    @Override
+    public void deleteTaskById(int id) {
+        super.deleteTaskById(id);
+        save();
+    }
+
+    @Override
+    public void deleteEpicById(int id) {
+        super.deleteEpicById(id);
+        save();
+    }
+
+    @Override
+    public void deleteSubTaskById(int id) {
+        super.deleteSubTaskById(id);
+        save();
+    }
+
+    @Override
+    public void deleteAllTasks() {
+        super.deleteAllTasks();
+        save();
+    }
+
+    @Override
+    public void deleteAllEpics() {
+        super.deleteAllEpics();
+        save();
+    }
+
+    @Override
+    public void deleteAllSubTasks() {
+        super.deleteAllSubTasks();
+        save();
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        super.updateTask(task);
+        save();
+    }
+
+    @Override
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
+        save();
+    }
+
+    @Override
+    public void updateSubTask(SubTask subTask) {
+        super.updateSubTask(subTask);
+        save();
+    }
 }
