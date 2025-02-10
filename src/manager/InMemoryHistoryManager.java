@@ -9,7 +9,7 @@ import java.util.Map;
 public class InMemoryHistoryManager implements HistoryManager {
     private Node<Task> listHead;
     private Node<Task> listTail;
-    private Map<Integer, Node<Task>> taskHistory;
+    private final Map<Integer, Node<Task>> taskHistory;
 
     public InMemoryHistoryManager() {
         taskHistory = new HashMap<>();
