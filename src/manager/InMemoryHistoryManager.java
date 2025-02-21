@@ -5,6 +5,7 @@ import task.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private Node<Task> listHead;
@@ -35,7 +36,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return getTasks();
     }
 
@@ -51,8 +52,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         return newNode;
     }
 
-    public ArrayList<Task> getTasks() {
-        ArrayList<Task> taskList = new ArrayList<>();
+    public List<Task> getTasks() {
+        List<Task> taskList = new ArrayList<>();
         Node<Task> node = listHead;
 
         while (node != null) {

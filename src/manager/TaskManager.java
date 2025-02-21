@@ -6,6 +6,7 @@ import task.Task;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface TaskManager {
     void addTask(Task task);
@@ -28,11 +29,11 @@ public interface TaskManager {
 
     void deleteAllSubTasks();
 
-    Task getTaskById(int id);
+    Optional<Task> getTaskById(int id);
 
-    Epic getEpicById(int id);
+    Optional<Epic> getEpicById(int id);
 
-    SubTask getSubTaskById(int id);
+    Optional<SubTask> getSubTaskById(int id);
 
     void updateTask(Task task);
 

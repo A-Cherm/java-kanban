@@ -1,10 +1,12 @@
 package task;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
     private final List<Integer> subTaskIdList;
+    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description, TaskStatus.NEW);
@@ -38,5 +40,14 @@ public class Epic extends Task {
                 return;
             }
         }
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 }

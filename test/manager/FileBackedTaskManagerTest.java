@@ -1,5 +1,7 @@
 package manager;
 
+import exception.ManagerSaveException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Epic;
@@ -11,27 +13,36 @@ import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FileBackedTaskManagerTest {
+class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private File file;
 
     @BeforeEach
     public void newFileManager() {
         try {
             file = File.createTempFile("ManagerTest", ".csv");
+            taskManager = new FileBackedTaskManager(file);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @BeforeAll
+    public static void testManagerSaveException() {
+        assertThrows(ManagerSaveException.class, () -> {
+            TaskManager testManager = new FileBackedTaskManager(new File("Test"));
+            testManager.addTask(new Task("a", "a", TaskStatus.NEW));
+        }, "Ошибка сохранения должна приводить к исключению");
+    }
+
     @Test
     public void shouldLoadTasksFromFile() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))){
-            bw.write("id,type,name,status,description,epic\n");
-            bw.write("1,TASK,Task1,DONE,asd\n");
-            bw.write("2,EPIC,Epic1,IN_PROGRESS,111\n");
-            bw.write("3,SUBTASK,Subtask1,DONE,112,2\n");
-            bw.write("4,SUBTASK,Subtask2,NEW,113,2\n");
-            bw.write("5,EPIC,Epic2,DONE,222\n");
+            bw.write("id,type,name,status,description,start time,duration,epic\n");
+            bw.write("1,TASK,Task1,DONE,asd,null,0\n");
+            bw.write("2,EPIC,Epic1,IN_PROGRESS,111,null,0\n");
+            bw.write("3,SUBTASK,Subtask1,DONE,112,null,0,2\n");
+            bw.write("4,SUBTASK,Subtask2,NEW,113,null,0,2\n");
+            bw.write("5,EPIC,Epic2,DONE,222,null,0,\n");
             bw.close();
 
             FileBackedTaskManager fileManager = FileBackedTaskManager.loadFromFile(file);
@@ -59,17 +70,17 @@ class FileBackedTaskManagerTest {
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             br.readLine();
-            assertEquals(1 + ",TASK,Task1,NEW,aaa", br.readLine(),
+            assertEquals(1 + ",TASK,Task1,NEW,aaa,null,0", br.readLine(),
                     "Неправильная запись задачи в файл");
-            assertEquals(6 + ",TASK,Task2,DONE,bbb", br.readLine(),
+            assertEquals(6 + ",TASK,Task2,DONE,bbb,null,0", br.readLine(),
                     "Неправильная запись задачи в файл");
-            assertEquals(2 + ",EPIC,Epic1,IN_PROGRESS,111", br.readLine(),
+            assertEquals(2 + ",EPIC,Epic1,IN_PROGRESS,111,null,0", br.readLine(),
                     "Неправильная запись эпика в файл");
-            assertEquals(5 + ",EPIC,Epic2,NEW,222", br.readLine(),
+            assertEquals(5 + ",EPIC,Epic2,NEW,222,null,0", br.readLine(),
                     "Неправильная запись эпика в файл");
-            assertEquals(3 + ",SUBTASK,Subtask1,NEW,112," + 2, br.readLine(),
+            assertEquals(3 + ",SUBTASK,Subtask1,NEW,112,null,0," + 2, br.readLine(),
                     "Неправильная запись подзадачи в файл");
-            assertEquals(4 + ",SUBTASK,Subtask2,IN_PROGRESS,113," + 2, br.readLine(),
+            assertEquals(4 + ",SUBTASK,Subtask2,IN_PROGRESS,113,null,0," + 2, br.readLine(),
                     "Неправильная запись подзадачи в файл");
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла");

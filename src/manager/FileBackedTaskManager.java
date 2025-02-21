@@ -1,6 +1,8 @@
 package manager;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         String string = String.format("%d,%s,%s,%s,%s", task.getId(), taskClass, task.getName(),
                 task.getStatus(), task.getDescription());
-
+        if (task.getStartTime() != null) {
+            string += "," + task.getStartTime().toString() + "," + task.getDuration().toMinutes();
+        } else {
+            string += "," + null + "," + 0;
+        }
         if (taskClass == TaskType.SUBTASK) {
             string += "," + ((SubTask) task).getEpicId();
         }
@@ -33,7 +39,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() throws ManagerSaveException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-            bw.write("id,type,name,status,description,epic\n");
+            bw.write("id,type,name,status,description,start time,duration,epic\n");
             for (Task task : super.getTaskList()) {
                 bw.write(toString(task) + "\n");
             }
@@ -51,16 +57,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private static Task fromString(String value) {
         String[] split = value.split(",");
         TaskStatus status = TaskStatus.valueOf(split[3]);
+        LocalDateTime startTime = null;
+        Duration duration = Duration.ZERO;
 
+        if (!split[5].equals("null")) {
+            startTime = LocalDateTime.parse(split[5]);
+            duration = Duration.ofMinutes(Integer.parseInt(split[6]));
+        }
         switch (TaskType.valueOf(split[1])) {
             case TaskType.EPIC:
                 Epic epic = new Epic(split[2], split[4], Integer.parseInt(split[0]));
                 epic.setStatus(status);
+                epic.setStartTime(startTime);
+                epic.setDuration(duration);
                 return epic;
             case TaskType.SUBTASK:
-                return new SubTask(split[2], split[4], Integer.parseInt(split[0]), status, Integer.parseInt(split[5]));
+                return new SubTask(split[2], split[4], Integer.parseInt(split[0]), status, startTime, duration,
+                        Integer.parseInt(split[7]));
             default:
-                return new Task(split[2], split[4], Integer.parseInt(split[0]), status);
+                return new Task(split[2], split[4], Integer.parseInt(split[0]), status, startTime, duration);
         }
     }
 
