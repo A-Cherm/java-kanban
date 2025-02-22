@@ -1,7 +1,6 @@
 package manager;
 
 import exception.ManagerSaveException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Epic;
@@ -26,11 +25,11 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         }
     }
 
-    @BeforeAll
-    public static void testManagerSaveException() {
+    @Test
+    public void testManagerSaveException() {
         assertThrows(ManagerSaveException.class, () -> {
-            TaskManager testManager = new FileBackedTaskManager(new File("Test"));
-            testManager.addTask(new Task("a", "a", TaskStatus.NEW));
+            file.setReadOnly();
+            taskManager.addTask(new Task("a", "a", TaskStatus.NEW));
         }, "Ошибка сохранения должна приводить к исключению");
     }
 
