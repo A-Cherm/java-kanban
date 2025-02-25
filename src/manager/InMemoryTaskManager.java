@@ -315,14 +315,19 @@ public class InMemoryTaskManager implements TaskManager {
     private static boolean ifTasksIntersect(Task task1, Task task2) {
         LocalDateTime start1 = task1.getStartTime();
         LocalDateTime start2 = task2.getStartTime();
-        return (start1.isAfter(start2) && start1.isBefore(task2.getEndTime()))
-                || (start2.isAfter(start1) && start2.isBefore(task1.getEndTime()));
+        LocalDateTime end1 = task1.getEndTime();
+        LocalDateTime end2 = task2.getEndTime();
+        return (start1.isAfter(start2) && start1.isBefore(end2))
+                || (start2.isAfter(start1) && start2.isBefore(end1))
+                || (start1.equals(start2))
+                || (end1.equals(end2));
     }
 
     private boolean checkTimeIntersections(Task task) {
         return prioritizedTasks
                 .stream()
-                .anyMatch((Task task1) -> InMemoryTaskManager.ifTasksIntersect(task, task1));
+                .filter(task1 -> !task.equals(task1))
+                .anyMatch(task1 -> InMemoryTaskManager.ifTasksIntersect(task, task1));
     }
 
     public int getCurrentId() {

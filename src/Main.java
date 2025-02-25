@@ -173,6 +173,14 @@ public class Main {
                 LocalDateTime.of(1,1,1,1,1), Duration.ofMinutes(10)));
         InMemoryTaskManager.printPrioritizedTasks(taskManager);
 
+        taskManager.updateTask(new Task("b", "c", id - 2, TaskStatus.DONE,
+                LocalDateTime.of(1,1,1,1,1), Duration.ofMinutes(5)));
+        InMemoryTaskManager.printPrioritizedTasks(taskManager);
+
+        taskManager.updateTask(new Task("b", "c", id - 2, TaskStatus.DONE,
+                LocalDateTime.of(1,1,1,1,1), Duration.ofMinutes(10)));
+        InMemoryTaskManager.printPrioritizedTasks(taskManager);
+
         taskManager.deleteAllTasks();
         InMemoryTaskManager.printPrioritizedTasks(taskManager);
     }
