@@ -6,7 +6,7 @@ import task.Epic;
 import task.Task;
 import task.TaskStatus;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,22 +20,25 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldAddTask() {
+        List<Task> history = historyManager.getHistory();
+
+        assertNotNull(history, "История не возвращается");
+        assertEquals(0, history.size(), "Неверный размер истории");
+
         Task task = new Task("a", "b", 1, TaskStatus.DONE);
         historyManager.addTask(task);
-        ArrayList<Task> history = historyManager.getHistory();
+        history = historyManager.getHistory();
 
         assertNotNull(history, "История не возвращается");
         assertEquals(1, history.size(), "Неверный размер истории");
 
-        Epic epic;
-        for (int i = 0; i < 9; i++) {
-            epic = new Epic("c", "d", i + 2);
-            historyManager.addTask(epic);
-        }
+        historyManager.addTask(new Epic("a", "b", 2));
+        historyManager.addTask(new Epic("a", "b", 3));
+
         history = historyManager.getHistory();
 
         assertNotNull(history, "История не возвращается");
-        assertEquals(10, history.size(), "Неверный размер истории");
+        assertEquals(3, history.size(), "Неверный размер истории");
 
         historyManager.addTask(task);
 
@@ -45,7 +48,7 @@ class InMemoryHistoryManagerTest {
         history = historyManager.getHistory();
 
         assertNotNull(history, "История не возвращается");
-        assertEquals(10, history.size(), "Неверный размер истории");
+        assertEquals(3, history.size(), "Неверный размер истории");
     }
 
     @Test
@@ -74,5 +77,38 @@ class InMemoryHistoryManagerTest {
                 "Не совпадают ссылки на голову и хвост");
         assertNull(historyManager.getListTail().next, "Непустая ссылка на следующую ноду хвоста списка");
         assertNull(historyManager.getListHead().prev, "Непустая ссылка на предыдущую ноду головы списка");
+    }
+
+    @Test
+    public void shouldRemoveTask() {
+        historyManager.addTask(new Task("a", "b", 1, TaskStatus.DONE));
+        historyManager.addTask(new Task("a", "b", 2, TaskStatus.DONE));
+        historyManager.addTask(new Task("a", "b", 3, TaskStatus.DONE));
+
+        List<Task> history = historyManager.getHistory();
+
+        assertEquals(3, history.size(), "Неверный размер истории");
+
+        historyManager.remove(1);
+        history = historyManager.getHistory();
+
+        assertEquals(2, history.size(), "Неверный размер истории");
+        assertEquals(2, history.getFirst().getId(), "Неверный первый элемент");
+
+        historyManager.addTask(new Task("a", "b", 1, TaskStatus.DONE));
+        historyManager.remove(3);
+        history = historyManager.getHistory();
+
+        assertEquals(2, history.size(), "Неверный размер истории");
+        assertEquals(2, history.getFirst().getId(), "Неверный первый элемент");
+        assertEquals(1, history.getLast().getId(), "Неверный последний элемент");
+
+        historyManager.addTask(new Task("a", "b", 3, TaskStatus.DONE));
+        historyManager.remove(3);
+        history = historyManager.getHistory();
+
+        assertEquals(2, history.size(), "Неверный размер истории");
+        assertEquals(2, history.getFirst().getId(), "Неверный первый элемент");
+        assertEquals(1, history.getLast().getId(), "Неверный последний элемент");
     }
 }

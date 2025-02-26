@@ -1,15 +1,22 @@
 package task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Task {
     private String name;
     private String description;
     private int id;
     private TaskStatus status;
+    private LocalDateTime startTime;
+    private Duration duration;
 
     public Task(String name, String description, TaskStatus status) {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.startTime = null;
+        this.duration = Duration.ZERO;
     }
 
     public Task(String name, String description, int id, TaskStatus status) {
@@ -17,6 +24,27 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
+        this.startTime = null;
+        this.duration = Duration.ZERO;
+    }
+
+    public Task(String name, String description, TaskStatus status, LocalDateTime startTime,
+                Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+    public Task(String name, String description, int id, TaskStatus status, LocalDateTime startTime,
+                Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     @Override
@@ -39,6 +67,8 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
+                ", start time=" + (startTime == null ? null : startTime.toString()) +
+                ", duration=" + (duration == null ? null : duration.toMinutes()) +
                 '}';
     }
 
@@ -58,6 +88,14 @@ public class Task {
         this.status = status;
     }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
     public int getId() {
         return id;
     }
@@ -72,5 +110,21 @@ public class Task {
 
     public TaskStatus getStatus() {
         return status;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime == null) {
+            return null;
+        } else {
+            return startTime.plus(duration);
+        }
     }
 }

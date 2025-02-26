@@ -4,6 +4,9 @@ import task.SubTask;
 import task.Task;
 import task.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -134,5 +137,51 @@ public class Main {
         taskManager.deleteEpicById(id);
 
         InMemoryTaskManager.printHistory(taskManager);
+
+        //приоритет
+        taskManager.deleteAllTasks();
+        taskManager.deleteAllEpics();
+
+        newTask = new Task("Задача 1", "123", 1, TaskStatus.NEW,
+                LocalDateTime.of(1,1,1,1,1), Duration.ofMinutes(10));
+        taskManager.addTask(newTask);
+        newTask = new Task("Задача 2", "321", 1, TaskStatus.DONE,
+                LocalDateTime.of(1,2,1,1,1), Duration.ofMinutes(20));
+        taskManager.addTask(newTask);
+
+        id = taskManager.getCurrentId();
+        newEpic = new Epic("Эпик 1", "");
+        taskManager.addEpic(newEpic);
+        newSubTask = new SubTask("Подзадача 1", "", 1, TaskStatus.IN_PROGRESS,
+                LocalDateTime.of(1,4,1,1,1), Duration.ofMinutes(20), id);
+        taskManager.addSubTask(newSubTask);
+        newSubTask = new SubTask("Подзадача 2", "", 1, TaskStatus.NEW,
+                LocalDateTime.of(1,3,1,1,1), Duration.ofMinutes(5), id);
+        taskManager.addSubTask(newSubTask);
+        newSubTask = new SubTask("Подзадача 3", "", 1, TaskStatus.NEW,
+                LocalDateTime.of(2,1,1,1,15), Duration.ofMinutes(15), id);
+        taskManager.addSubTask(newSubTask);
+        newEpic = new Epic("Эпик 2", "");
+        taskManager.addEpic(newEpic);
+        InMemoryTaskManager.printAllTasks(taskManager);
+        InMemoryTaskManager.printPrioritizedTasks(taskManager);
+
+        taskManager.updateTask(new Task("b", "c", id - 2, TaskStatus.DONE));
+        InMemoryTaskManager.printPrioritizedTasks(taskManager);
+
+        taskManager.updateTask(new Task("b", "c", id - 2, TaskStatus.DONE,
+                LocalDateTime.of(1,1,1,1,1), Duration.ofMinutes(10)));
+        InMemoryTaskManager.printPrioritizedTasks(taskManager);
+
+        taskManager.updateTask(new Task("b", "c", id - 2, TaskStatus.DONE,
+                LocalDateTime.of(1,1,1,1,1), Duration.ofMinutes(5)));
+        InMemoryTaskManager.printPrioritizedTasks(taskManager);
+
+        taskManager.updateTask(new Task("b", "c", id - 2, TaskStatus.DONE,
+                LocalDateTime.of(1,1,1,1,1), Duration.ofMinutes(10)));
+        InMemoryTaskManager.printPrioritizedTasks(taskManager);
+
+        taskManager.deleteAllTasks();
+        InMemoryTaskManager.printPrioritizedTasks(taskManager);
     }
 }
