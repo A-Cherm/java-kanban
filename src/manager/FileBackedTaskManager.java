@@ -61,7 +61,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Duration duration = Duration.ZERO;
 
         if (!split[5].equals("null")) {
-            startTime = LocalDateTime.parse(split[5]);
+            startTime = LocalDateTime.parse(split[5], dtf);
             duration = Duration.ofMinutes(Integer.parseInt(split[6]));
         }
         switch (TaskType.valueOf(split[1])) {
@@ -139,9 +139,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void addTask(Task task) {
-        super.addTask(task);
+    public boolean addTask(Task task) {
+        boolean notIntersects = super.addTask(task);
         save();
+        return notIntersects;
     }
 
     @Override
@@ -151,9 +152,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void addSubTask(SubTask subTask) {
-        super.addSubTask(subTask);
+    public boolean addSubTask(SubTask subTask) {
+        boolean notIntersects = super.addSubTask(subTask);
         save();
+        return notIntersects;
     }
 
     @Override
@@ -193,9 +195,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
-        super.updateTask(task);
+    public boolean updateTask(Task task) {
+        boolean notIntersects = super.updateTask(task);
         save();
+        return notIntersects;
     }
 
     @Override
@@ -205,8 +208,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) {
-        super.updateSubTask(subTask);
+    public boolean updateSubTask(SubTask subTask) {
+        boolean notIntersects = super.updateSubTask(subTask);
         save();
+        return notIntersects;
     }
 }

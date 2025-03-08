@@ -2,8 +2,10 @@ package task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Task {
+    protected static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     private String name;
     private String description;
     private int id;
@@ -67,7 +69,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
-                ", start time=" + (startTime == null ? null : startTime.toString()) +
+                ", start time=" + (startTime == null ? null : startTime.format(dtf)) +
                 ", duration=" + (duration == null ? null : duration.toMinutes()) +
                 '}';
     }

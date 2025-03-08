@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface TaskManager {
-    void addTask(Task task);
+    boolean addTask(Task task);
 
     void addEpic(Epic epic);
 
-    void addSubTask(SubTask subTask);
+    boolean addSubTask(SubTask subTask);
 
     List<Task> getTaskList();
 
@@ -22,6 +22,8 @@ public interface TaskManager {
     List<SubTask> getSubTaskList();
 
     List<SubTask> getEpicSubTaskList(int id);
+
+    List<Task> getPrioritizedTasks();
 
     void deleteAllTasks();
 
@@ -35,11 +37,11 @@ public interface TaskManager {
 
     Optional<SubTask> getSubTaskById(int id);
 
-    void updateTask(Task task);
+    boolean updateTask(Task task);
 
     void updateEpic(Epic epic);
 
-    void updateSubTask(SubTask subTask);
+    boolean updateSubTask(SubTask subTask);
 
     void deleteTaskById(int id);
 
