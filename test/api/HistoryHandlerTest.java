@@ -2,7 +2,7 @@ package api;
 
 import org.junit.jupiter.api.Test;
 import task.Epic;
-import task.SubTask;
+import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
@@ -26,11 +26,11 @@ class HistoryHandlerTest extends HttpTaskServerTest {
         manager.addTask(new Task("Task2", "Testing task2", TaskStatus.NEW));
         int id = manager.getCurrentId();
         manager.addEpic(new Epic("Epic1", "Testing epic1"));
-        manager.addSubTask(new SubTask("Subtask1", "Testing subtask2", TaskStatus.NEW, id));
+        manager.addSubtask(new Subtask("Subtask1", "Testing subtask2", TaskStatus.NEW, id));
 
         manager.getTaskById(id - 1);
         manager.getTaskById(id - 2);
-        manager.getSubTaskById(id + 1);
+        manager.getSubtaskById(id + 1);
         manager.getEpicById(id);
 
         HttpClient client = HttpClient.newHttpClient();

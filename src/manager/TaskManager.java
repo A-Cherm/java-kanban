@@ -1,27 +1,26 @@
 package manager;
 
 import task.Epic;
-import task.SubTask;
+import task.Subtask;
 import task.Task;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface TaskManager {
-    boolean addTask(Task task);
+    void addTask(Task task);
 
     void addEpic(Epic epic);
 
-    boolean addSubTask(SubTask subTask);
+    void addSubtask(Subtask subtask);
 
     List<Task> getTaskList();
 
     List<Epic> getEpicList();
 
-    List<SubTask> getSubTaskList();
+    List<Subtask> getSubtaskList();
 
-    List<SubTask> getEpicSubTaskList(int id);
+    List<Subtask> getEpicSubtaskList(int id);
 
     List<Task> getPrioritizedTasks();
 
@@ -29,25 +28,25 @@ public interface TaskManager {
 
     void deleteAllEpics();
 
-    void deleteAllSubTasks();
+    void deleteAllSubtasks();
 
-    Optional<Task> getTaskById(int id);
+    Task getTaskById(int id);
 
-    Optional<Epic> getEpicById(int id);
+    Epic getEpicById(int id);
 
-    Optional<SubTask> getSubTaskById(int id);
+    Subtask getSubtaskById(int id);
 
-    boolean updateTask(Task task);
+    void updateTask(Task task);
 
     void updateEpic(Epic epic);
 
-    boolean updateSubTask(SubTask subTask);
+    void updateSubtask(Subtask subtask);
 
     void deleteTaskById(int id);
 
     void deleteEpicById(int id);
 
-    void deleteSubTaskById(int id);
+    void deleteSubtaskById(int id);
 
     List<Task> getHistory();
 
@@ -55,5 +54,5 @@ public interface TaskManager {
 
     Map<Integer, Epic> getEpics();
 
-    Map<Integer, SubTask> getSubTasks();
+    Map<Integer, Subtask> getSubtasks();
 }

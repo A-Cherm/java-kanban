@@ -91,7 +91,7 @@ class TaskHandlerTest extends HttpTaskServerTest {
     }
 
     @Test
-    public void shouldNotAddTask() throws IOException, InterruptedException {
+    public void shouldNotAddIntersectingTask() throws IOException, InterruptedException {
         Task task1 = new Task("Task1", "Testing task1", TaskStatus.NEW,
                 LocalDateTime.of(2000, 1, 1, 0, 0), Duration.ofMinutes(10));
         Task task2 = new Task("Task2", "Testing task2", TaskStatus.DONE,
@@ -151,6 +151,35 @@ class TaskHandlerTest extends HttpTaskServerTest {
         assertEquals("Testing task2", tasksFromManager.getFirst().getDescription(),
                 "Неверное описание задачи");
         assertEquals(20, tasksFromManager.getFirst().getDuration().toMinutes(),
+                "Неверная длительность задачи");
+    }
+
+    @Test
+    public void shouldNotUpdateInvalidTaskId() throws IOException, InterruptedException {
+        int id = manager.getCurrentId();
+        manager.addTask(new Task("Task1", "Testing task1", TaskStatus.NEW));
+        Task updatedTask = new Task("Task2", "Testing task2", id + 1, TaskStatus.DONE,
+                LocalDateTime.now(), Duration.ofMinutes(20));
+        String updatedTaskJson = gson.toJson(updatedTask);
+
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks");
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(updatedTaskJson))
+                .uri(url)
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(404, response.statusCode());
+
+        List<Task> tasksFromManager = manager.getTaskList();
+
+        assertNotNull(tasksFromManager, "Задачи не возвращаются");
+        assertEquals(1, tasksFromManager.size(), "Неверное количество задач");
+        assertEquals("Task1", tasksFromManager.getFirst().getName(), "Неверное имя задачи");
+        assertEquals("Testing task1", tasksFromManager.getFirst().getDescription(),
+                "Неверное описание задачи");
+        assertEquals(0, tasksFromManager.getFirst().getDuration().toMinutes(),
                 "Неверная длительность задачи");
     }
 

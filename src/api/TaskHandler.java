@@ -2,13 +2,14 @@ package api;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exception.NotFoundException;
+import exception.TimeIntersectionException;
 import manager.TaskManager;
 import com.google.gson.Gson;
 import task.Task;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     TaskManager manager;
@@ -24,18 +25,24 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         String[] pathSplit = exchange.getRequestURI().getPath().split("/");
         String requestMethod = exchange.getRequestMethod();
 
-        switch (requestMethod) {
-            case "GET":
-                handleGetTasks(exchange, pathSplit);
-                break;
-            case "POST":
-                handlePostTasks(exchange, pathSplit);
-                break;
-            case "DELETE":
-                handleDeleteTasks(exchange, pathSplit);
-                break;
-            default:
-                sendNotFound(exchange);
+        try {
+            switch (requestMethod) {
+                case "GET":
+                    handleGetTasks(exchange, pathSplit);
+                    break;
+                case "POST":
+                    handlePostTasks(exchange, pathSplit);
+                    break;
+                case "DELETE":
+                    handleDeleteTasks(exchange, pathSplit);
+                    break;
+                default:
+                    sendNotFound(exchange);
+            }
+        } catch (NumberFormatException | NotFoundException e) {
+            sendNotFound(exchange);
+        } catch (TimeIntersectionException e) {
+            sendHasInteractions(exchange);
         }
     }
 
@@ -46,17 +53,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             response = gson.toJson(manager.getTaskList());
             sendText(exchange, response);
         } else if (pathSplit.length == 3) {
-            try {
-                Optional<Task> optTask = manager.getTaskById(Integer.parseInt(pathSplit[2]));
-                if (optTask.isPresent()) {
-                    response = gson.toJson(optTask.get());
-                    sendText(exchange, response);
-                } else {
-                    sendNotFound(exchange);
-                }
-            } catch (NumberFormatException e) {
-                sendNotFound(exchange);
-            }
+            response = gson.toJson(manager.getTaskById(Integer.parseInt(pathSplit[2])));
+            sendText(exchange, response);
         } else {
             sendNotFound(exchange);
         }
@@ -67,17 +65,12 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
         if (pathSplit.length == 2) {
             Task newTask = gson.fromJson(body, Task.class);
-            boolean notIntersects;
             if (newTask.getId() == 0) {
-                notIntersects = manager.addTask(newTask);
+                manager.addTask(newTask);
             } else {
-                notIntersects = manager.updateTask(newTask);
+                manager.updateTask(newTask);
             }
-            if (notIntersects) {
-                sendConfirmation(exchange);
-            } else {
-                sendHasInteractions(exchange);
-            }
+            sendConfirmation(exchange);
         } else {
             sendNotFound(exchange);
         }
@@ -85,12 +78,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleDeleteTasks(HttpExchange exchange, String[] pathSplit) throws IOException {
         if (pathSplit.length == 3) {
-            try {
-                manager.deleteTaskById(Integer.parseInt(pathSplit[2]));
-                sendConfirmation(exchange);
-            } catch (NumberFormatException e) {
-                sendNotFound(exchange);
-            }
+            manager.deleteTaskById(Integer.parseInt(pathSplit[2]));
+            sendConfirmation(exchange);
         } else {
             sendNotFound(exchange);
         }

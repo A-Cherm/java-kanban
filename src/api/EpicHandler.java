@@ -3,12 +3,12 @@ package api;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exception.NotFoundException;
 import manager.TaskManager;
 import task.Epic;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     TaskManager manager;
@@ -24,18 +24,22 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         String[] pathSplit = exchange.getRequestURI().getPath().split("/");
         String requestMethod = exchange.getRequestMethod();
 
-        switch (requestMethod) {
-            case "GET":
-                handleGetEpics(exchange, pathSplit);
-                break;
-            case "POST":
-                handlePostEpics(exchange, pathSplit);
-                break;
-            case "DELETE":
-                handleDeleteEpics(exchange, pathSplit);
-                break;
-            default:
-                sendNotFound(exchange);
+        try {
+            switch (requestMethod) {
+                case "GET":
+                    handleGetEpics(exchange, pathSplit);
+                    break;
+                case "POST":
+                    handlePostEpics(exchange, pathSplit);
+                    break;
+                case "DELETE":
+                    handleDeleteEpics(exchange, pathSplit);
+                    break;
+                default:
+                    sendNotFound(exchange);
+            }
+        } catch (NumberFormatException | NotFoundException e) {
+            sendNotFound(exchange);
         }
     }
 
@@ -46,23 +50,16 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             response = gson.toJson(manager.getEpicList());
             sendText(exchange, response);
         } else {
-            try {
-                int epicId = Integer.parseInt(pathSplit[2]);
-                Optional<Epic> optEpic = manager.getEpicById(epicId);
-                if (optEpic.isPresent()) {
-                    if (pathSplit.length == 3) {
-                        response = gson.toJson(optEpic.get());
-                        sendText(exchange, response);
-                    } else if (pathSplit.length == 4 && pathSplit[3].equals("subtasks")) {
-                        response = gson.toJson(manager.getEpicSubTaskList(epicId));
-                        sendText(exchange, response);
-                    } else {
-                        sendNotFound(exchange);
-                    }
-                } else {
-                    sendNotFound(exchange);
-                }
-            } catch (NumberFormatException e) {
+            int epicId = Integer.parseInt(pathSplit[2]);
+            Epic epic = manager.getEpicById(epicId);
+
+            if (pathSplit.length == 3) {
+                response = gson.toJson(epic);
+                sendText(exchange, response);
+            } else if (pathSplit.length == 4 && pathSplit[3].equals("subtasks")) {
+                response = gson.toJson(manager.getEpicSubtaskList(epicId));
+                sendText(exchange, response);
+            } else {
                 sendNotFound(exchange);
             }
         }
@@ -82,12 +79,8 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleDeleteEpics(HttpExchange exchange, String[] pathSplit) throws IOException {
         if (pathSplit.length == 3) {
-            try {
-                manager.deleteEpicById(Integer.parseInt(pathSplit[2]));
-                sendConfirmation(exchange);
-            } catch (NumberFormatException e) {
-                sendNotFound(exchange);
-            }
+            manager.deleteEpicById(Integer.parseInt(pathSplit[2]));
+            sendConfirmation(exchange);
         } else {
             sendNotFound(exchange);
         }

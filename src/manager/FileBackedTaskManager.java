@@ -20,7 +20,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         TaskType taskClass = TaskType.TASK;
         if (task instanceof Epic) {
             taskClass = TaskType.EPIC;
-        } else if (task instanceof SubTask) {
+        } else if (task instanceof Subtask) {
             taskClass = TaskType.SUBTASK;
         }
 
@@ -32,7 +32,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             string += "," + null + "," + 0;
         }
         if (taskClass == TaskType.SUBTASK) {
-            string += "," + ((SubTask) task).getEpicId();
+            string += "," + ((Subtask) task).getEpicId();
         }
         return string;
     }
@@ -46,8 +46,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (Epic epic : super.getEpicList()) {
                 bw.write(toString(epic) + "\n");
             }
-            for (SubTask subTask : super.getSubTaskList()) {
-                bw.write(toString(subTask) + "\n");
+            for (Subtask subtask : super.getSubtaskList()) {
+                bw.write(toString(subtask) + "\n");
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка сохранения в файл");
@@ -72,7 +72,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 epic.setDuration(duration);
                 return epic;
             case TaskType.SUBTASK:
-                return new SubTask(split[2], split[4], Integer.parseInt(split[0]), status, startTime, duration,
+                return new Subtask(split[2], split[4], Integer.parseInt(split[0]), status, startTime, duration,
                         Integer.parseInt(split[7]));
             default:
                 return new Task(split[2], split[4], Integer.parseInt(split[0]), status, startTime, duration);
@@ -83,7 +83,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
         List<Task> taskList = new ArrayList<>();
         List<Epic> epicList = new ArrayList<>();
-        List<SubTask> subTaskList = new ArrayList<>();
+        List<Subtask> subtaskList = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             br.readLine();
@@ -96,12 +96,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                 if (task instanceof Epic) {
                     epicList.add((Epic) task);
-                } else if (task instanceof SubTask) {
-                    subTaskList.add((SubTask) task);
+                } else if (task instanceof Subtask) {
+                    subtaskList.add((Subtask) task);
                 } else {
                     taskList.add(task);
                 }
-                fileBackedTaskManager.setAllTasks(taskList, epicList, subTaskList);
+                fileBackedTaskManager.setAllTasks(taskList, epicList, subtaskList);
             }
         } catch (IOException e) {
             System.out.println("Ошибка загрузки из файла");
@@ -115,7 +115,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             FileBackedTaskManager fm = new FileBackedTaskManager(tempFile);
             fm.addTask(new Task("Задача 1", "123", TaskStatus.NEW));
             fm.addEpic(new Epic("Эпик 1", "321"));
-            fm.addSubTask(new SubTask("Подзадача 1", "asd", TaskStatus.IN_PROGRESS,
+            fm.addSubtask(new Subtask("Подзадача 1", "asd", TaskStatus.IN_PROGRESS,
                     fm.getCurrentId() - 1));
             fm.addTask(new Task("Задача 2", "345", TaskStatus.DONE));
             fm.addEpic(new Epic("Эпик 2", "666"));
@@ -139,10 +139,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public boolean addTask(Task task) {
-        boolean notIntersects = super.addTask(task);
+    public void addTask(Task task) {
+        super.addTask(task);
         save();
-        return notIntersects;
     }
 
     @Override
@@ -152,10 +151,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public boolean addSubTask(SubTask subTask) {
-        boolean notIntersects = super.addSubTask(subTask);
+    public void addSubtask(Subtask subtask) {
+        super.addSubtask(subtask);
         save();
-        return notIntersects;
     }
 
     @Override
@@ -171,8 +169,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void deleteSubTaskById(int id) {
-        super.deleteSubTaskById(id);
+    public void deleteSubtaskById(int id) {
+        super.deleteSubtaskById(id);
         save();
     }
 
@@ -189,16 +187,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void deleteAllSubTasks() {
-        super.deleteAllSubTasks();
+    public void deleteAllSubtasks() {
+        super.deleteAllSubtasks();
         save();
     }
 
     @Override
-    public boolean updateTask(Task task) {
-        boolean notIntersects = super.updateTask(task);
+    public void updateTask(Task task) {
+        super.updateTask(task);
         save();
-        return notIntersects;
     }
 
     @Override
@@ -208,9 +205,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public boolean updateSubTask(SubTask subTask) {
-        boolean notIntersects = super.updateSubTask(subTask);
+    public void updateSubtask(Subtask subtask) {
+        super.updateSubtask(subtask);
         save();
-        return notIntersects;
     }
 }

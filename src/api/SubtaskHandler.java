@@ -3,12 +3,13 @@ package api;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exception.NotFoundException;
+import exception.TimeIntersectionException;
 import manager.TaskManager;
-import task.SubTask;
+import task.Subtask;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
     TaskManager manager;
@@ -24,18 +25,24 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         String[] pathSplit = exchange.getRequestURI().getPath().split("/");
         String requestMethod = exchange.getRequestMethod();
 
-        switch (requestMethod) {
-            case "GET":
-                handleGetSubtasks(exchange, pathSplit);
-                break;
-            case "POST":
-                handlePostSubtasks(exchange, pathSplit);
-                break;
-            case "DELETE":
-                handleDeleteSubtasks(exchange, pathSplit);
-                break;
-            default:
-                sendNotFound(exchange);
+        try {
+            switch (requestMethod) {
+                case "GET":
+                    handleGetSubtasks(exchange, pathSplit);
+                    break;
+                case "POST":
+                    handlePostSubtasks(exchange, pathSplit);
+                    break;
+                case "DELETE":
+                    handleDeleteSubtasks(exchange, pathSplit);
+                    break;
+                default:
+                    sendNotFound(exchange);
+            }
+        } catch (NumberFormatException | NotFoundException e) {
+            sendNotFound(exchange);
+        } catch (TimeIntersectionException e) {
+            sendHasInteractions(exchange);
         }
     }
 
@@ -43,20 +50,11 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         String response;
 
         if (pathSplit.length == 2) {
-            response = gson.toJson(manager.getSubTaskList());
+            response = gson.toJson(manager.getSubtaskList());
             sendText(exchange, response);
         } else if (pathSplit.length == 3) {
-            try {
-                Optional<SubTask> optSubtask = manager.getSubTaskById(Integer.parseInt(pathSplit[2]));
-                if (optSubtask.isPresent()) {
-                    response = gson.toJson(optSubtask.get());
-                    sendText(exchange, response);
-                } else {
-                    sendNotFound(exchange);
-                }
-            } catch (NumberFormatException e) {
-                sendNotFound(exchange);
-            }
+            response = gson.toJson(manager.getSubtaskById(Integer.parseInt(pathSplit[2])));
+            sendText(exchange, response);
         } else {
             sendNotFound(exchange);
         }
@@ -66,18 +64,13 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
 
         if (pathSplit.length == 2) {
-            SubTask newSubtask = gson.fromJson(body, SubTask.class);
-            boolean notIntersects;
+            Subtask newSubtask = gson.fromJson(body, Subtask.class);
             if (newSubtask.getId() == 0) {
-                notIntersects = manager.addSubTask(newSubtask);
+                manager.addSubtask(newSubtask);
             } else {
-                notIntersects = manager.updateSubTask(newSubtask);
+                manager.updateSubtask(newSubtask);
             }
-            if (notIntersects) {
-                sendConfirmation(exchange);
-            } else {
-                sendHasInteractions(exchange);
-            }
+            sendConfirmation(exchange);
         } else {
             sendNotFound(exchange);
         }
@@ -86,7 +79,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
     private void handleDeleteSubtasks(HttpExchange exchange, String[] pathSplit) throws IOException {
         if (pathSplit.length == 3) {
             try {
-                manager.deleteSubTaskById(Integer.parseInt(pathSplit[2]));
+                manager.deleteSubtaskById(Integer.parseInt(pathSplit[2]));
                 sendConfirmation(exchange);
             } catch (NumberFormatException e) {
                 sendNotFound(exchange);

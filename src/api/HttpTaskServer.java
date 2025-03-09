@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpServer;
 import manager.InMemoryTaskManager;
 import manager.TaskManager;
+import task.Epic;
+import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
@@ -15,8 +17,8 @@ import java.time.LocalDateTime;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
-    private HttpServer httpServer;
-    private Gson gson;
+    private final HttpServer httpServer;
+    private final Gson gson;
 
     public HttpTaskServer(TaskManager manager) throws IOException {
         this.gson = new GsonBuilder()
@@ -46,9 +48,16 @@ public class HttpTaskServer {
 
     public static void main(String[] args) throws IOException {
         TaskManager manager1 = new InMemoryTaskManager();
-        manager1.addTask(new Task("a", "b", TaskStatus.NEW,
+        manager1.addTask(new Task("Task1", "a", TaskStatus.NEW,
                 LocalDateTime.now(), Duration.ofMinutes(10)));
-        manager1.addTask(new Task("a", "b", TaskStatus.NEW));
+        manager1.addTask(new Task("Task2", "b", TaskStatus.NEW));
+        manager1.addEpic(new Epic("Epic1", "c"));
+        manager1.addSubtask(new Subtask("Subtask1", "d", TaskStatus.NEW, 3));
+
+        manager1.getTaskById(2);
+        manager1.getSubtaskById(4);
+        manager1.getEpicById(3);
+
         HttpTaskServer httpServer = new HttpTaskServer(manager1);
 
         httpServer.start();

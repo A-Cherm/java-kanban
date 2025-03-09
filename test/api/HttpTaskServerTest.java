@@ -6,7 +6,7 @@ import manager.InMemoryTaskManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import task.Epic;
-import task.SubTask;
+import task.Subtask;
 import task.Task;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ public abstract class HttpTaskServerTest {
     protected static class EpicListTypeToken extends TypeToken<List<Epic>> {
     }
 
-    protected static class SubTaskListTypeToken extends TypeToken<List<SubTask>> {
+    protected static class SubtaskListTypeToken extends TypeToken<List<Subtask>> {
     }
 
     @BeforeEach

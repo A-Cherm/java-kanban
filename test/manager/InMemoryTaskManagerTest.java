@@ -1,5 +1,6 @@
 package manager;
 
+import exception.TimeIntersectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Task;
@@ -26,18 +27,27 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
         assertEquals(2, taskManager.getTasks().size(), "Неверное число задач");
 
-        taskManager.addTask(new Task("a", "a", TaskStatus.NEW,
-                LocalDateTime.of(2000, 1, 1, 10, 20), Duration.ofMinutes(5)));
+        try {
+            taskManager.addTask(new Task("a", "a", TaskStatus.NEW,
+                    LocalDateTime.of(2000, 1, 1, 10, 20), Duration.ofMinutes(5)));
+        } catch (TimeIntersectionException ignored) {
+        }
 
         assertEquals(2, taskManager.getTasks().size(), "Неверное число задач");
 
-        taskManager.addTask(new Task("a", "a", TaskStatus.NEW,
-                LocalDateTime.of(2000, 1, 1, 10, 20), Duration.ofMinutes(40)));
+        try {
+            taskManager.addTask(new Task("a", "a", TaskStatus.NEW,
+                    LocalDateTime.of(2000, 1, 1, 10, 20), Duration.ofMinutes(40)));
+        } catch (TimeIntersectionException ignored) {
+        }
 
         assertEquals(2, taskManager.getTasks().size(), "Неверное число задач");
 
-        taskManager.addTask(new Task("a", "a", TaskStatus.NEW,
-                LocalDateTime.of(2000, 1, 1, 10, 40), Duration.ofMinutes(60)));
+        try {
+            taskManager.addTask(new Task("a", "a", TaskStatus.NEW,
+                    LocalDateTime.of(2000, 1, 1, 10, 40), Duration.ofMinutes(60)));
+        } catch (TimeIntersectionException ignored) {
+        }
 
         assertEquals(2, taskManager.getTasks().size(), "Неверное число задач");
 

@@ -2,7 +2,7 @@ package api;
 
 import org.junit.jupiter.api.Test;
 import task.Epic;
-import task.SubTask;
+import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
@@ -27,8 +27,8 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
     public void shouldGetSubtasks() throws IOException, InterruptedException {
         int id = manager.getCurrentId();
         manager.addEpic(new Epic("Epic1", "epic1"));
-        manager.addSubTask(new SubTask("Subtask1", "Testing subtask1", TaskStatus.NEW, id));
-        manager.addSubTask(new SubTask("Subtask2", "Testing subtask2", TaskStatus.NEW,
+        manager.addSubtask(new Subtask("Subtask1", "Testing subtask1", TaskStatus.NEW, id));
+        manager.addSubtask(new Subtask("Subtask2", "Testing subtask2", TaskStatus.NEW,
                 LocalDateTime.now(), Duration.ofMinutes(20), id));
 
         HttpClient client = HttpClient.newHttpClient();
@@ -41,7 +41,7 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
 
         assertEquals(200, response.statusCode());
 
-        List<Task> subtasksFromResponse = gson.fromJson(response.body(), new SubTaskListTypeToken().getType());
+        List<Task> subtasksFromResponse = gson.fromJson(response.body(), new SubtaskListTypeToken().getType());
 
         assertNotNull(subtasksFromResponse, "Подзадачи не возвращаются");
         assertEquals(2, subtasksFromResponse.size(), "Неверное количество подзадач");
@@ -51,8 +51,8 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
     public void shouldGetSubtaskById() throws IOException, InterruptedException {
         int id = manager.getCurrentId();
         manager.addEpic(new Epic("Epic1", "epic1"));
-        manager.addSubTask(new SubTask("Subtask1", "Testing subtask1", TaskStatus.NEW, id));
-        manager.addSubTask(new SubTask("Subtask2", "Testing subtask2", TaskStatus.NEW,
+        manager.addSubtask(new Subtask("Subtask1", "Testing subtask1", TaskStatus.NEW, id));
+        manager.addSubtask(new Subtask("Subtask2", "Testing subtask2", TaskStatus.NEW,
                 LocalDateTime.now(), Duration.ofMinutes(20), id));
 
         HttpClient client = HttpClient.newHttpClient();
@@ -65,7 +65,7 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
 
         assertEquals(200, response.statusCode());
 
-        SubTask subtaskFromResponse = gson.fromJson(response.body(), SubTask.class);
+        Subtask subtaskFromResponse = gson.fromJson(response.body(), Subtask.class);
 
         assertNotNull(subtaskFromResponse, "Подзадача не возвращается");
         assertEquals("Subtask1", subtaskFromResponse.getName(), "Неверное имя задачи");
@@ -77,7 +77,7 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
     public void shouldAddSubtask() throws IOException, InterruptedException {
         int id = manager.getCurrentId();
         manager.addEpic(new Epic("Epic1", "epic1"));
-        SubTask subtask = new SubTask("Subtask1", "Testing subtask1", TaskStatus.NEW,
+        Subtask subtask = new Subtask("Subtask1", "Testing subtask1", TaskStatus.NEW,
                 LocalDateTime.now(), Duration.ofMinutes(20), id);
         String subtaskJson = gson.toJson(subtask);
 
@@ -91,7 +91,7 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
 
         assertEquals(201, response.statusCode());
 
-        List<SubTask> subtasksFromManager = manager.getSubTaskList();
+        List<Subtask> subtasksFromManager = manager.getSubtaskList();
 
         assertNotNull(subtasksFromManager, "Подзадачи не возвращаются");
         assertEquals(1, subtasksFromManager.size(), "Неверное количество подзадач");
@@ -104,9 +104,9 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
     public void shouldNotAddSubtask() throws IOException, InterruptedException {
         int id = manager.getCurrentId();
         manager.addEpic(new Epic("Epic1", "epic1"));
-        SubTask subtask1 = new SubTask("Subtask1", "Testing subtask1", TaskStatus.NEW,
+        Subtask subtask1 = new Subtask("Subtask1", "Testing subtask1", TaskStatus.NEW,
                 LocalDateTime.of(2000, 1, 1, 0, 0), Duration.ofMinutes(10), id);
-        SubTask subtask2 = new SubTask("Subtask2", "Testing subtask2", TaskStatus.DONE,
+        Subtask subtask2 = new Subtask("Subtask2", "Testing subtask2", TaskStatus.DONE,
                 LocalDateTime.of(2000, 1, 1, 0, 0), Duration.ofMinutes(5), id);
         String subtaskJson1 = gson.toJson(subtask1);
         String subtaskJson2 = gson.toJson(subtask2);
@@ -127,7 +127,7 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
 
         assertEquals(406, response.statusCode());
 
-        List<SubTask> subtasksFromManager = manager.getSubTaskList();
+        List<Subtask> subtasksFromManager = manager.getSubtaskList();
 
         assertNotNull(subtasksFromManager, "Подзадачи не возвращаются");
         assertEquals(1, subtasksFromManager.size(), "Неверное количество подзадач");
@@ -140,9 +140,9 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
     public void shouldUpdateSubtask() throws IOException, InterruptedException {
         int id = manager.getCurrentId();
         manager.addEpic(new Epic("Epic1", ""));
-        manager.addSubTask(new SubTask("Subtask1", "Testing subtask1", TaskStatus.NEW,
+        manager.addSubtask(new Subtask("Subtask1", "Testing subtask1", TaskStatus.NEW,
                 LocalDateTime.now(), Duration.ofMinutes(5), id));
-        SubTask updatedTask = new SubTask("Subtask2", "Testing subtask2", id + 1, TaskStatus.DONE,
+        Subtask updatedTask = new Subtask("Subtask2", "Testing subtask2", id + 1, TaskStatus.DONE,
                 LocalDateTime.now(), Duration.ofMinutes(20), id);
         String updatedTaskJson = gson.toJson(updatedTask);
 
@@ -156,22 +156,53 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
 
         assertEquals(201, response.statusCode());
 
-        List<SubTask> tasksFromManager = manager.getSubTaskList();
+        List<Subtask> tasksFromManager = manager.getSubtaskList();
 
-        assertNotNull(tasksFromManager, "Задачи не возвращаются");
-        assertEquals(1, tasksFromManager.size(), "Неверное количество задач");
-        assertEquals("Subtask2", tasksFromManager.getFirst().getName(), "Неверное имя задачи");
+        assertNotNull(tasksFromManager, "Подзадачи не возвращаются");
+        assertEquals(1, tasksFromManager.size(), "Неверное количество подзадач");
+        assertEquals("Subtask2", tasksFromManager.getFirst().getName(), "Неверное имя подзадачи");
         assertEquals("Testing subtask2", tasksFromManager.getFirst().getDescription(),
-                "Неверное описание задачи");
+                "Неверное описание подзадачи");
         assertEquals(20, tasksFromManager.getFirst().getDuration().toMinutes(),
-                "Неверная длительность задачи");
+                "Неверная длительность подзадачи");
+    }
+
+    @Test
+    public void shouldNotUpdateInvalidSubtaskId() throws IOException, InterruptedException {
+        int id = manager.getCurrentId();
+        manager.addEpic(new Epic("Epic1", ""));
+        manager.addSubtask(new Subtask("Subtask1", "Testing subtask1", TaskStatus.NEW,
+                LocalDateTime.now(), Duration.ofMinutes(5), id));
+        Subtask updatedTask = new Subtask("Subtask2", "Testing subtask2", id + 2, TaskStatus.DONE,
+                LocalDateTime.now(), Duration.ofMinutes(20), id);
+        String updatedTaskJson = gson.toJson(updatedTask);
+
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/subtasks");
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(updatedTaskJson))
+                .uri(url)
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(404, response.statusCode());
+
+        List<Subtask> tasksFromManager = manager.getSubtaskList();
+
+        assertNotNull(tasksFromManager, "Подзадачи не возвращаются");
+        assertEquals(1, tasksFromManager.size(), "Неверное количество поддзадач");
+        assertEquals("Subtask1", tasksFromManager.getFirst().getName(), "Неверное имя подзадачи");
+        assertEquals("Testing subtask1", tasksFromManager.getFirst().getDescription(),
+                "Неверное описание подзадачи");
+        assertEquals(5, tasksFromManager.getFirst().getDuration().toMinutes(),
+                "Неверная длительность подзадачи");
     }
 
     @Test
     public void shouldDeleteSubtask() throws IOException, InterruptedException {
         int id = manager.getCurrentId();
         manager.addEpic(new Epic("Epic1", "epic1"));
-        SubTask subtask = new SubTask("Subtask1", "Testing subtask1", TaskStatus.NEW,
+        Subtask subtask = new Subtask("Subtask1", "Testing subtask1", TaskStatus.NEW,
                 LocalDateTime.now(), Duration.ofMinutes(5), id);
         manager.addTask(subtask);
 
@@ -185,7 +216,7 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
 
         assertEquals(201, response.statusCode());
 
-        List<SubTask> subtasksFromManager = manager.getSubTaskList();
+        List<Subtask> subtasksFromManager = manager.getSubtaskList();
 
         assertNotNull(subtasksFromManager, "Подзадачи не возвращаются");
         assertEquals(0, subtasksFromManager.size(), "Неверное количество подзадач");

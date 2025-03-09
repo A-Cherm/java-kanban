@@ -18,19 +18,19 @@ class EpicTest {
     public void shouldAddAndDeleteSubtaskId() {
         Epic epic = new Epic("a", "b", 1);
 
-        epic.addSubTaskId(2);
+        epic.addSubtaskId(2);
 
-        ArrayList<Integer> subTaskId = epic.getSubTaskIdList();
+        ArrayList<Integer> subTaskId = epic.getSubtaskIdList();
 
         assertNotNull(subTaskId, "Список подзадач не возвращается");
         assertEquals(1, subTaskId.size(), "Неправильный размер списка подзадач эпика");
 
-        epic.addSubTaskId(2);
+        epic.addSubtaskId(2);
 
         assertEquals(1, subTaskId.size(), "Неправильный размер списка подзадач эпика");
 
-        epic.deleteSubTaskId(2);
-        subTaskId = epic.getSubTaskIdList();
+        epic.deleteSubtaskId(2);
+        subTaskId = epic.getSubtaskIdList();
 
         assertEquals(0, subTaskId.size(), "Неправильный размер списка подзадач эпика");
     }
@@ -39,16 +39,16 @@ class EpicTest {
     public void shouldClearSubtaskList() {
         Epic epic = new Epic("a", "b", 1);
 
-        epic.addSubTaskId(2);
-        epic.addSubTaskId(3);
+        epic.addSubtaskId(2);
+        epic.addSubtaskId(3);
 
-        ArrayList<Integer> subTaskId = epic.getSubTaskIdList();
+        ArrayList<Integer> subTaskId = epic.getSubtaskIdList();
 
         assertNotNull(subTaskId, "Список подзадач не возвращается");
         assertEquals(2, subTaskId.size(), "Неправильный размер списка подзадач эпика");
 
-        epic.clearSubTaskList();
-        subTaskId = epic.getSubTaskIdList();
+        epic.clearSubtaskList();
+        subTaskId = epic.getSubtaskIdList();
 
         assertEquals(0, subTaskId.size(), "Неправильный размер списка подзадач эпика");
     }

@@ -2,7 +2,7 @@ package api;
 
 import org.junit.jupiter.api.Test;
 import task.Epic;
-import task.SubTask;
+import task.Subtask;
 import task.TaskStatus;
 
 import java.io.IOException;
@@ -70,8 +70,8 @@ public class EpicHandlerTest extends HttpTaskServerTest {
         int id = manager.getCurrentId();
         manager.addEpic(new Epic("Epic1", "Testing epic1"));
         manager.addEpic(new Epic("Epic2", "Testing epic2"));
-        manager.addSubTask(new SubTask("Subtask1", "Testing subtask1", TaskStatus.NEW, id + 1));
-        manager.addSubTask(new SubTask("Subtask2", "Testing subtask2", TaskStatus.DONE, id + 1));
+        manager.addSubtask(new Subtask("Subtask1", "Testing subtask1", TaskStatus.NEW, id + 1));
+        manager.addSubtask(new Subtask("Subtask2", "Testing subtask2", TaskStatus.DONE, id + 1));
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/epics/" + (id + 1) + "/subtasks");
@@ -83,7 +83,7 @@ public class EpicHandlerTest extends HttpTaskServerTest {
 
         assertEquals(200, response.statusCode());
 
-        List<SubTask> subtasksFromResponse = gson.fromJson(response.body(), new SubTaskListTypeToken().getType());
+        List<Subtask> subtasksFromResponse = gson.fromJson(response.body(), new SubtaskListTypeToken().getType());
 
         assertNotNull(subtasksFromResponse, "Подзадачи не возвращаются");
         assertEquals(2, subtasksFromResponse.size(), "Неверное число подзадач");
