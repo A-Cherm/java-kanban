@@ -70,8 +70,13 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
         if (pathSplit.length == 2) {
             Epic newEpic = gson.fromJson(body, Epic.class);
-            manager.addEpic(newEpic);
-            sendConfirmation(exchange);
+            if (newEpic.getId() == 0) {
+                manager.addEpic(newEpic);
+                sendText(exchange, gson.toJson(manager.getCurrentId() - 1));
+            } else {
+                manager.updateEpic(newEpic);
+                sendConfirmation(exchange);
+            }
         } else {
             sendNotFound(exchange);
         }

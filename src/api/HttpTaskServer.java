@@ -36,10 +36,12 @@ public class HttpTaskServer {
 
     public void start() {
         httpServer.start();
+        System.out.println("HTTP-сервер запущен на " + PORT + " порту.");
     }
 
     public void close() {
         httpServer.stop(1);
+        System.out.println("HTTP-сервер на " + PORT + " порту остановлен.");
     }
 
     public Gson getGson() {
@@ -58,8 +60,10 @@ public class HttpTaskServer {
         manager1.getSubtaskById(4);
         manager1.getEpicById(3);
 
+        Epic newEpic = new Epic("Epic2", "e");
         HttpTaskServer httpServer = new HttpTaskServer(manager1);
 
+        System.out.println(httpServer.getGson().toJson(newEpic));
         httpServer.start();
     }
 }

@@ -102,14 +102,41 @@ public class EpicHandlerTest extends HttpTaskServerTest {
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(201, response.statusCode());
+        assertEquals(200, response.statusCode());
 
+        int idFromResponse = Integer.parseInt(response.body());
         List<Epic> epicsFromManager = manager.getEpicList();
 
         assertNotNull(epicsFromManager, "Задачи не возвращаются");
         assertEquals(1, epicsFromManager.size(), "Неверное количество задач");
         assertEquals("Epic1", epicsFromManager.getFirst().getName(), "Неверное имя задачи");
         assertEquals("Testing epic1", epicsFromManager.getFirst().getDescription(),
+                "Неверное описание задачи");
+        assertEquals(1, idFromResponse, "Возвращается неверный id");
+    }
+
+    @Test
+    public void shouldUpdateEpic() throws IOException, InterruptedException {
+        manager.addEpic(new Epic("Epic1", "Testing epic1"));
+        Epic newEpic = new Epic("Epic2", "Testing epic2", manager.getCurrentId() - 1);
+        String epicJson = gson.toJson(newEpic);
+
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/epics");
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(epicJson))
+                .uri(url)
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(201, response.statusCode());
+
+        List<Epic> epicsFromManager = manager.getEpicList();
+
+        assertNotNull(epicsFromManager, "Задачи не возвращаются");
+        assertEquals(1, epicsFromManager.size(), "Неверное количество задач");
+        assertEquals("Epic2", epicsFromManager.getFirst().getName(), "Неверное имя задачи");
+        assertEquals("Testing epic2", epicsFromManager.getFirst().getDescription(),
                 "Неверное описание задачи");
     }
 

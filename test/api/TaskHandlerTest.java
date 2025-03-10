@@ -79,7 +79,8 @@ class TaskHandlerTest extends HttpTaskServerTest {
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(201, response.statusCode());
+        int idFromResponse = Integer.parseInt(response.body());
+        assertEquals(200, response.statusCode());
 
         List<Task> tasksFromManager = manager.getTaskList();
 
@@ -88,6 +89,7 @@ class TaskHandlerTest extends HttpTaskServerTest {
         assertEquals("Task1", tasksFromManager.getFirst().getName(), "Неверное имя задачи");
         assertEquals("Testing task1", tasksFromManager.getFirst().getDescription(),
                 "Неверное описание задачи");
+        assertEquals(1, idFromResponse, "Возвращается неверный id");
     }
 
     @Test

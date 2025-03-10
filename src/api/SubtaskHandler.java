@@ -67,10 +67,11 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
             Subtask newSubtask = gson.fromJson(body, Subtask.class);
             if (newSubtask.getId() == 0) {
                 manager.addSubtask(newSubtask);
+                sendText(exchange, gson.toJson(manager.getCurrentId() - 1));
             } else {
                 manager.updateSubtask(newSubtask);
+                sendConfirmation(exchange);
             }
-            sendConfirmation(exchange);
         } else {
             sendNotFound(exchange);
         }

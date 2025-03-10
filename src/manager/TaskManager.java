@@ -48,6 +48,8 @@ public interface TaskManager {
 
     void deleteSubtaskById(int id);
 
+    int getCurrentId();
+
     List<Task> getHistory();
 
     Map<Integer, Task> getTasks();

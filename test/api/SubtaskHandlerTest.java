@@ -89,7 +89,8 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(201, response.statusCode());
+        int idFromResponse = Integer.parseInt(response.body());
+        assertEquals(200, response.statusCode());
 
         List<Subtask> subtasksFromManager = manager.getSubtaskList();
 
@@ -98,6 +99,7 @@ public class SubtaskHandlerTest extends HttpTaskServerTest {
         assertEquals("Subtask1", subtasksFromManager.getFirst().getName(), "Неверное имя подзадачи");
         assertEquals("Testing subtask1", subtasksFromManager.getFirst().getDescription(),
                 "Неверное описание подзадачи");
+        assertEquals(2, idFromResponse, "Возвращается неверный id");
     }
 
     @Test

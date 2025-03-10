@@ -67,10 +67,11 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             Task newTask = gson.fromJson(body, Task.class);
             if (newTask.getId() == 0) {
                 manager.addTask(newTask);
+                sendText(exchange, gson.toJson(manager.getCurrentId() - 1));
             } else {
                 manager.updateTask(newTask);
+                sendConfirmation(exchange);
             }
-            sendConfirmation(exchange);
         } else {
             sendNotFound(exchange);
         }
