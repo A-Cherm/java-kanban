@@ -4,7 +4,7 @@ import exception.ManagerSaveException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Epic;
-import task.SubTask;
+import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
@@ -48,8 +48,8 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
             assertEquals(1, fileManager.getTasks().size(), "Неправильное число задач");
             assertEquals(2, fileManager.getEpics().size(), "Неправильное число эпиков");
-            assertEquals(2, fileManager.getSubTasks().size(), "Неправильное число подзадач");
-            assertEquals(2, fileManager.getEpicList().getFirst().getSubTaskIdList().size(),
+            assertEquals(2, fileManager.getSubtasks().size(), "Неправильное число подзадач");
+            assertEquals(2, fileManager.getEpicList().getFirst().getSubtaskIdList().size(),
                     "Неправильное число подзадач эпика");
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла");
@@ -62,8 +62,8 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
         fileManager.addTask(new Task("Task1", "aaa", TaskStatus.NEW));
         fileManager.addEpic(new Epic("Epic1", "111"));
-        fileManager.addSubTask(new SubTask("Subtask1", "112", TaskStatus.NEW, 2));
-        fileManager.addSubTask(new SubTask("Subtask2", "113", TaskStatus.IN_PROGRESS, 2));
+        fileManager.addSubtask(new Subtask("Subtask1", "112", TaskStatus.NEW, 2));
+        fileManager.addSubtask(new Subtask("Subtask2", "113", TaskStatus.IN_PROGRESS, 2));
         fileManager.addEpic(new Epic("Epic2", "222"));
         fileManager.addTask(new Task("Task2", "bbb",TaskStatus.DONE));
 

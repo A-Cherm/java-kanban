@@ -5,38 +5,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private final List<Integer> subTaskIdList;
+    private final List<Integer> subtaskIdList;
     private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description, TaskStatus.NEW);
-        this.subTaskIdList = new ArrayList<>();
+        this.subtaskIdList = new ArrayList<>();
     }
 
     public Epic(String name, String description, int id) {
         super(name, description, id, TaskStatus.NEW);
-        this.subTaskIdList = new ArrayList<>();
+        this.subtaskIdList = new ArrayList<>();
     }
 
-    public void clearSubTaskList() {
-        subTaskIdList.clear();
+    public void clearSubtaskList() {
+        subtaskIdList.clear();
         this.setStatus(TaskStatus.NEW);
     }
 
-    public ArrayList<Integer> getSubTaskIdList() {
-        return new ArrayList<>(subTaskIdList);
+    public ArrayList<Integer> getSubtaskIdList() {
+        return new ArrayList<>(subtaskIdList);
     }
 
-    public void addSubTaskId(int id) {
-        if (!subTaskIdList.contains(id)) {
-            subTaskIdList.add(id);
+    public void addSubtaskId(int id) {
+        if (!subtaskIdList.contains(id)) {
+            subtaskIdList.add(id);
         }
     }
 
-    public void deleteSubTaskId(int id) {
-        for (int i = 0; i < subTaskIdList.size(); i++) {
-            if (subTaskIdList.get(i) == id) {
-                subTaskIdList.remove(i);
+    public void deleteSubtaskId(int id) {
+        for (int i = 0; i < subtaskIdList.size(); i++) {
+            if (subtaskIdList.get(i) == id) {
+                subtaskIdList.remove(i);
                 return;
             }
         }
